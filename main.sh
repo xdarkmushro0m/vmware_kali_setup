@@ -95,6 +95,8 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
 
 EOF
 
+
+
 # ms-repo-cleanup role
 cat<<'EOF' > /home/my/bootstrap-kali/roles/ms-repo-cleanup/tasks/main.yml
 ---

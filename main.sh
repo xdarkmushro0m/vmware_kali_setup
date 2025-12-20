@@ -139,7 +139,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - bloodhound
       - neo4j
       - build-essential
-      - ibssl-dev
+      - libssl-dev
       - zlib1g-dev
       - libncurses5-dev
       - libffi-dev
@@ -183,7 +183,6 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
     name:
       - libssl-dev
       - zlib1g-dev
-      - libbz2-dev
       - libreadline-dev
       - libsqlite3-dev
       - llvm

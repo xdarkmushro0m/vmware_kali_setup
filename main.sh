@@ -209,31 +209,24 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
   become: false
   run_once: true
 
-- name: Install Python 2.7.18 with pyenv (under user my)
+- name: Install Python versions with pyenv (under user my)
   shell: |
     export PYENV_ROOT="/home/my/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
-    # Workaround for GCC treating 'false' as keyword in C23
-    export CFLAGS="-std=gnu89"
-    pyenv install -s 2.7.18
+    if [ "{{ item }}" = "2.7.18" ]; then
+      export CFLAGS="-std=gnu89"
+    fi
+    pyenv install -s {{ item }}
   args:
     executable: /bin/bash
   become: false
   environment:
     HOME: "/home/my"
+  loop:
+    - "2.7.18"
+    - "3.11.8"
 
-
-#- name: Install Python versions
-#  shell: pyenv install -s {{ item }}
-#  args:
-#    executable: /bin/bash
-#  environment:
-#    PYENV_ROOT: "{{ ansible_env.HOME }}/.pyenv"
-#    PATH: "{{ ansible_env.HOME }}/.pyenv/bin:{{ ansible_env.PATH }}"
-#  with_items:
-#    - "2.7.18"
-#    - "3.11.8"
 EOF
 
 # vscode role

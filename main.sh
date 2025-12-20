@@ -210,16 +210,51 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
     - 'export PATH="$PYENV_ROOT/bin:$PATH"'
     - 'eval "$(pyenv init --path)"'
 
-- name: Install Python versions
-  shell: pyenv install -s {{ item }}
-  args:
-    executable: /bin/bash
-  environment:
-    PYENV_ROOT: "{{ ansible_env.HOME }}/.pyenv"
-    PATH: "{{ ansible_env.HOME }}/.pyenv/bin:{{ ansible_env.PATH }}"
-  with_items:
-    - "2.7.18"
-    - "3.11.8"
+- name: Install Python 2.7.18 using pyenv 
+    hosts: all
+    become: yes 
+    vars: 
+        pyenv_root: "{{ ansible_env.HOME }}/.pyenv" 
+        python_version: "2.7.18" 
+        
+    tasks: - name: Ensure dependencies for pyenv are installed 
+        apt: 
+            name: 
+                - make 
+                - build-essential 
+                - libssl-dev 
+                - zlib1g-dev 
+                - libbz2-dev 
+                - libreadline-dev 
+                - libsqlite3-dev 
+                - wget 
+                - curl 
+                - llvm 
+                - libncurses5-dev 
+                - libncursesw5-dev 
+                - xz-utils 
+                - tk-dev 
+                - libffi-dev 
+                - liblzma-dev 
+            state: present 
+            update_cache: yes 
+        
+- name: Install Python {{ python_version }} with pyenv 
+  shell: |
+    export PATH="{{ pyenv_root }}/bin:$PATH"
+    eval "$(pyenv init -)" pyenv install -s {{ python_version }}
+    args: executable: /bin/bash
+
+#- name: Install Python versions
+#  shell: pyenv install -s {{ item }}
+#  args:
+#    executable: /bin/bash
+#  environment:
+#    PYENV_ROOT: "{{ ansible_env.HOME }}/.pyenv"
+#    PATH: "{{ ansible_env.HOME }}/.pyenv/bin:{{ ansible_env.PATH }}"
+#  with_items:
+#    - "2.7.18"
+#    - "3.11.8"
 EOF
 
 # vscode role

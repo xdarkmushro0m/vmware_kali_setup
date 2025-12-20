@@ -69,10 +69,6 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
         - /usr/share/keyrings/microsoft.gpg
         - /etc/apt/keyrings/microsoft.gpg
 
-    - name: Show home directory
-    debug:
-        msg: "Home directory is {{ ansible_env.HOME }}"
-
   roles:
     - tmux  
     - ms-repo-cleanup
@@ -409,12 +405,6 @@ EOF
 
 cat<<'EOF' > /home/my/bootstrap-kali/roles/zsh_theme/tasks/main.yml
 ---
-- name: Ensure base home directory exists
-  file:
-    path: "/home/my"
-    state: directory
-    mode: "0755"
-
 - name: Ensure oh-my-zsh custom themes directory exists
   file:
     path: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes"
@@ -504,5 +494,47 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/zsh/tasks/main.yml
     owner: my
     group: my
     mode: '0644'
+
+EOF
+
+# only applied for vmware fusion
+
+cat<<'EOF' > /home/my/bootstrap-kali/roles/vmware_mount/tasks/main.yml
+---
+- name: Ensure VMware shared folders mount point exists
+  ansible.builtin.file:
+    path: "/mnt/psf/"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Add vmhgfs-fuse mount to fstab and mount it
+  ansible.posix.mount:
+    path: "/mnt/psf/"
+    src: vmhgfs-fuse
+    fstype: fuse
+    opts: "defaults,allow_other,nofail,subtype=vmhgfs-fuse"
+    state: mounted
+
+- name: Mount VMware shared folder immediately
+  ansible.builtin.command: >
+    /usr/bin/vmhgfs-fuse .host:/ "/mnt/psf/"
+    -o subtype=vmhgfs-fuse,allow_other
+  args:
+    creates: "/mnt/psf/"
+  register: mount_cmd
+  ignore_errors: true
+
+- name: Verify that VMware shared folder is mounted
+  ansible.builtin.command: mountpoint -q "/mnt/psf/"
+  register: mount_check
+  ignore_errors: true
+
+- name: Report mount status
+  ansible.builtin.debug:
+    msg: >
+      VMware shared folder Documents mount status:
+      {{ 'Mounted successfully' if mount_check.rc == 0 else 'Mount failed or not present' }}
 
 EOF

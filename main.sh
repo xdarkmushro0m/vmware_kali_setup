@@ -178,13 +178,19 @@ EOF
 # python-env role
 cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
 ---
-- name: Install pyenv dependencies
+- name: Install pyenv build dependencies
+  become: yes
   apt:
     name:
+      - make
+      - build-essential
       - libssl-dev
       - zlib1g-dev
+      - libbz2-dev
       - libreadline-dev
       - libsqlite3-dev
+      - wget
+      - curl
       - llvm
       - libncurses5-dev
       - libncursesw5-dev
@@ -195,19 +201,28 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
     state: present
     update_cache: yes
 
-- name: Clone pyenv
+- name: Clone pyenv into /home/my/.pyenv
   git:
-    repo: https://github.com/pyenv/pyenv.git
-    dest: "{{ ansible_env.HOME }}/.pyenv"
+    repo: "https://github.com/pyenv/pyenv.git"
+    dest: "/home/my/.pyenv"
     update: yes
+  become: false
+  run_once: true
 
-- name: Install Python 2.7.18 with pyenv
+- name: Install Python 2.7.18 with pyenv (under user my)
   shell: |
-    export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
+    export PYENV_ROOT="/home/my/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
+    # Workaround for GCC treating 'false' as keyword in C23
+    export CFLAGS="-std=gnu89"
     pyenv install -s 2.7.18
   args:
     executable: /bin/bash
+  become: false
+  environment:
+    HOME: "/home/my"
+
 
 #- name: Install Python versions
 #  shell: pyenv install -s {{ item }}

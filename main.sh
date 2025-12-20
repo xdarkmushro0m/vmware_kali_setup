@@ -95,8 +95,6 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
 
 EOF
 
-
-
 # ms-repo-cleanup role
 cat<<'EOF' > /home/my/bootstrap-kali/roles/ms-repo-cleanup/tasks/main.yml
 ---
@@ -492,7 +490,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
 - name: Clone TPM
   git:
     repo: "https://github.com/tmux-plugins/tpm"
-    dest: "{{ user_home }}/.tmux/plugins/tpm"
+    dest: "/home/my/.tmux/plugins/tpm"
     depth: 1
     update: yes
   notify: Reload tmux
@@ -500,7 +498,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
 - name: Deploy tmux.conf
   copy:
     src: "/home/my/Desktop/vmware_kali_setup-main/tmux.conf"
-    dest: "{{ user_home }}/.tmux.conf"
+    dest: "/home/my/.tmux.conf"
     mode: '0644'
   notify: Reload tmux
 

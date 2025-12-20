@@ -70,8 +70,9 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
         - /etc/apt/keyrings/microsoft.gpg
 
     - name: Show home directory
-        debug:
-            msg: "Home directory is {{ ansible_env.HOME }}"
+      ansible.builtin.debug:
+        msg: "Home directory is {{ ansible_env.HOME }}"
+
 
   roles:
     - tmux  

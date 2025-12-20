@@ -72,7 +72,10 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
     - name: Show home directory
       ansible.builtin.debug:
         msg: "Home directory is {{ ansible_env.HOME }}"
-
+    
+    - name: Show current user id
+      ansible.builtin.debug:
+        msg: "Current user is {{ ansible_user_id }}"
 
   roles:
     - tmux  
@@ -273,7 +276,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/browser/tasks/main.yml
 # --- Ensure extensions directory exists ---
 - name: Ensure Firefox extensions directory exists
   file:
-    path: "{{ ansible_env.HOME }}/.mozilla/firefox/{{ firefox_profile }}/extensions"
+    path: "/home/my/.mozilla/firefox/{{ firefox_profile }}/extensions"
     state: directory
     mode: '0755'
 
@@ -281,18 +284,19 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/browser/tasks/main.yml
 - name: Download FoxyProxy extension
   get_url:
     url: "https://addons.mozilla.org/firefox/downloads/latest/foxyproxy-standard/latest.xpi"
-    dest: "{{ ansible_env.HOME }}/.mozilla/firefox/{{ firefox_profile }}/extensions/foxyproxy-standard@eric.h.jung.xpi"
+    dest: "/home/my/.mozilla/firefox/{{ firefox_profile }}/extensions/foxyproxy-standard@eric.h.jung.xpi"
     mode: '0644'
 
 # --- Verification ---
 - name: Verify FoxyProxy extension installed
   stat:
-    path: "{{ ansible_env.HOME }}/.mozilla/firefox/{{ firefox_profile }}/extensions/foxyproxy-standard@eric.h.jung.xpi"
+    path: "/home/my/.mozilla/firefox/{{ firefox_profile }}/extensions/foxyproxy-standard@eric.h.jung.xpi"
   register: foxyproxy_installed
 
 - name: Debug extension status
   debug:
     msg: "FoxyProxy installed: {{ foxyproxy_installed.stat.exists }}"
+
 
 EOF
 
@@ -359,33 +363,37 @@ EOF
 # fonts
 cat<<'EOF' > /home/my/bootstrap-kali/roles/fonts/tasks/main.yml
 ---
+- name: Set user home directory
+  set_fact:
+    user_home: "/home/my"
+
 - name: Ensure fonts directory exists
   file:
-    path: "{{ ansible_env.HOME }}/.fonts"
+    path: "{{ user_home }}/.fonts"
     state: directory
 
 - name: Download MesloLGS NF Regular
   get_url:
     url: "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
-    dest: "{{ ansible_env.HOME }}/.fonts/MesloLGS NF Regular.ttf"
+    dest: "{{ user_home }}/.fonts/MesloLGS NF Regular.ttf"
     mode: '0644'
 
 - name: Download MesloLGS NF Bold
   get_url:
     url: "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
-    dest: "{{ ansible_env.HOME }}/.fonts/MesloLGS NF Bold.ttf"
+    dest: "{{ user_home }}/.fonts/MesloLGS NF Bold.ttf"
     mode: '0644'
 
 - name: Download MesloLGS NF Italic
   get_url:
     url: "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf"
-    dest: "{{ ansible_env.HOME }}/.fonts/MesloLGS NF Italic.ttf"
+    dest: "{{ user_home }}/.fonts/MesloLGS NF Italic.ttf"
     mode: '0644'
 
 - name: Download MesloLGS NF Bold Italic
   get_url:
     url: "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
-    dest: "{{ ansible_env.HOME }}/.fonts/MesloLGS NF Bold Italic.ttf"
+    dest: "{{ user_home }}/.fonts/MesloLGS NF Bold Italic.ttf"
     mode: '0644'
   notify: Rebuild font cache
 
@@ -397,7 +405,6 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/fonts/tasks/main.yml
   debug:
     msg: "MesloLGS NF fonts detected ✅"
   when: "'MesloLGS NF' in fc_list.stdout"
-
 
 EOF
 
@@ -416,29 +423,33 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/zsh_theme/tasks/main.yml
     state: directory
     mode: "0755"
 
+- name: Set user home directory
+  set_fact:
+    user_home: "/home/my"
+
 - name: Ensure oh-my-zsh custom themes directory exists
   file:
-    path: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes"
+    path: "{{ user_home }}/.oh-my-zsh/custom/themes"
     state: directory
 
 - name: Clone Powerlevel10k
   git:
     repo: "https://github.com/romkatv/powerlevel10k.git"
-    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    dest: "{{ user_home }}/.oh-my-zsh/custom/themes/powerlevel10k"
     depth: 1
     update: yes
   notify: Reload zsh
 
 - name: Add Powerlevel10k to .zshrc
   lineinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-    line: "source {{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
+    path: "{{ user_home }}/.zshrc"
+    line: "source {{ user_home }}/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
     insertafter: EOF
   notify: Reload zsh
 
 - name: Source p10k config if exists
   lineinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
+    path: "{{ user_home }}/.zshrc"
     line: '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
     insertafter: EOF
   notify: Reload zsh
@@ -459,23 +470,27 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
     path: "{{ ansible_env.HOME }}/.tmux.conf"
   register: tmux_conf
 
+- name: Set user home directory
+  set_fact:
+    user_home: "/home/my"
+
 - name: Create .tmux.conf if missing
   copy:
     src: "/home/my/Desktop/vmware_kali_setup-main/tmux.conf"
-    dest: "{{ ansible_env.HOME }}/.tmux.conf"
+    dest: "{{ user_home }}/.tmux.conf"
     mode: '0644'
   when: not tmux_conf.stat.exists
   notify: Reload tmux
 
 - name: Ensure tmux plugins directory exists
   file:
-    path: "{{ ansible_env.HOME }}/.tmux/plugins"
+    path: "{{ user_home }}/.tmux/plugins"
     state: directory
 
 - name: Clone TPM
   git:
     repo: "https://github.com/tmux-plugins/tpm"
-    dest: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
+    dest: "{{ user_home }}/.tmux/plugins/tpm"
     depth: 1
     update: yes
   notify: Reload tmux
@@ -483,7 +498,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
 - name: Deploy tmux.conf
   copy:
     src: "/home/my/Desktop/vmware_kali_setup-main/tmux.conf"
-    dest: "{{ ansible_env.HOME }}/.tmux.conf"
+    dest: "{{ user_home }}/.tmux.conf"
     mode: '0644'
   notify: Reload tmux
 

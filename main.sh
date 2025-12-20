@@ -479,10 +479,9 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
 EOF
 
 cat<<'EOF' >  /home/my/bootstrap-kali/roles/tmux/handlers/main.yml
----
-- name: Reload tmux
+- name: Reload tmux if running
   shell: "tmux source-file ~/.tmux.conf"
-  ignore_errors: yes   # avoids failure if tmux isn’t running
+  when: "'tmux' in ansible_env.PS1 or lookup('pipe','pgrep tmux')|length > 0"
 
 EOF
 

@@ -81,7 +81,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
     - productivity
     - desktop-cleanup
     - fonts
-    - vmware_mount
+    #- vmware_mount
     - zsh
     - zsh_theme
 
@@ -138,6 +138,16 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - ssh
       - bloodhound
       - neo4j
+      - build-essential
+      - ibssl-dev
+      - zlib1g-dev
+      - libncurses5-dev
+      - libffi-dev
+      - libsqlite3-dev
+      - wget
+      - curl
+      - libreadline-dev
+      - libbz2-dev
     state: present
 EOF
 

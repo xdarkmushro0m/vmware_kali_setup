@@ -193,6 +193,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
       - libffi-dev
       - liblzma-dev
     state: present
+    update_cache: yes
 
 - name: Clone pyenv
   git:
@@ -200,50 +201,13 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
     dest: "{{ ansible_env.HOME }}/.pyenv"
     update: yes
 
-- name: Ensure pyenv init in bashrc
-  lineinfile:
-    path: ~/.bashrc
-    line: "{{ item }}"
-    insertafter: EOF
-  with_items:
-    - 'export PYENV_ROOT="$HOME/.pyenv"'
-    - 'export PATH="$PYENV_ROOT/bin:$PATH"'
-    - 'eval "$(pyenv init --path)"'
-
-- name: Install Python 2.7.18 using pyenv 
-    hosts: all
-    become: yes 
-    vars: 
-        pyenv_root: "{{ ansible_env.HOME }}/.pyenv" 
-        python_version: "2.7.18" 
-        
-    tasks: - name: Ensure dependencies for pyenv are installed 
-        apt: 
-            name: 
-                - make 
-                - build-essential 
-                - libssl-dev 
-                - zlib1g-dev 
-                - libbz2-dev 
-                - libreadline-dev 
-                - libsqlite3-dev 
-                - wget 
-                - curl 
-                - llvm 
-                - libncurses5-dev 
-                - libncursesw5-dev 
-                - xz-utils 
-                - tk-dev 
-                - libffi-dev 
-                - liblzma-dev 
-            state: present 
-            update_cache: yes 
-        
-- name: Install Python {{ python_version }} with pyenv 
+- name: Install Python 2.7.18 with pyenv
   shell: |
-    export PATH="{{ pyenv_root }}/bin:$PATH"
-    eval "$(pyenv init -)" pyenv install -s {{ python_version }}
-    args: executable: /bin/bash
+    export PATH="{{ ansible_env.HOME }}/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv install -s 2.7.18
+  args:
+    executable: /bin/bash
 
 #- name: Install Python versions
 #  shell: pyenv install -s {{ item }}

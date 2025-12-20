@@ -289,7 +289,7 @@ fi
 # plugins
 plugins=(git zsh-syntax-highlighting)
 
-source /mnt/psf/Documents/lmy-vm-shared/kali_settings/.aliases
+source /media/psf/Documents/lmy-vm-shared/kali_settings/.aliases
 
 # this is create a wrapper for output coloring
 # Universal cyan wrapper

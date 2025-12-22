@@ -156,6 +156,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - curl
       - libreadline-dev
       - libbz2-dev
+      - rlwrap
     state: present
 EOF
 

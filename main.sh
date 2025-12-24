@@ -157,6 +157,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - libreadline-dev
       - libbz2-dev
       - rlwrap
+      - braa
     state: present
 EOF
 

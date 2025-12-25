@@ -177,6 +177,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - sipvicious
       - tnscmd10g
       - whatweb
+      - pipx
     state: present
 EOF
 

@@ -493,6 +493,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/handlers/main.yml
 
 EOF
 
+
 cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
 ---
 - name: Check if .tmux.conf exists

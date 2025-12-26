@@ -260,6 +260,13 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
     - "2.7.18"
     - "3.11.8"
 
+- name: Ensure user "my" owns /home/my/.pyenv recursively
+  ansible.builtin.file:
+    path: /home/my/.pyenv
+    owner: my
+    group: my
+    recurse: yes
+
 EOF
 
 # vscode role

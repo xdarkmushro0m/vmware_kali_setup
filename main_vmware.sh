@@ -575,7 +575,7 @@ EOF
 cat<<'EOF' >/home/my/bootstrap-kali/roles/vmware_mount/tasks/main.yml
 ---
 - name: Ensure mountpoint directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ vmware_share_mountpoint }}"
     state: directory
     owner: root
@@ -583,13 +583,12 @@ cat<<'EOF' >/home/my/bootstrap-kali/roles/vmware_mount/tasks/main.yml
     mode: '0755'
 
 - name: Install VMware tools package
-  package:
-    name: "{{ vmware_tools_package }}"
+  ansible.builtin.package:
+    name: open-vm-tools
     state: present
-  when: ansible_os_family in ["Debian", "RedHat"]
 
 - name: Mount VMware host shared folders
-  mount:
+  ansible.builtin.mount:
     path: "{{ vmware_share_mountpoint }}"
     src: "{{ vmware_share_source }}"
     fstype: "{{ vmware_share_fstype }}"
@@ -597,7 +596,7 @@ cat<<'EOF' >/home/my/bootstrap-kali/roles/vmware_mount/tasks/main.yml
     state: mounted
 
 - name: Persist VMware host shared folders in fstab
-  mount:
+  ansible.builtin.mount:
     path: "{{ vmware_share_mountpoint }}"
     src: "{{ vmware_share_source }}"
     fstype: "{{ vmware_share_fstype }}"

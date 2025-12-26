@@ -258,7 +258,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/python-env/tasks/main.yml
     HOME: "/home/my"
   loop:
     - "2.7.18"
-    - "3.11.8"
+    - "3.13.7"
 
 - name: Ensure user "my" owns /home/my/.pyenv recursively
   ansible.builtin.file:

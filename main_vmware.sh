@@ -509,13 +509,20 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
     path: "{{ user_home }}/.tmux/plugins"
     state: directory
 
+- name: Check if tmux plugins folder exists
+  stat:
+    path: /home/my/.tmux/plugins
+  register: tmux_plugins_dir
+
 - name: Clone TPM
   git:
     repo: "https://github.com/tmux-plugins/tpm"
     dest: "/home/my/.tmux/plugins/tpm"
     depth: 1
     update: yes
+  when: tmux_plugins_dir.stat.exists
   notify: Reload tmux
+
 
 - name: Deploy tmux.conf
   copy:

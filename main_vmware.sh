@@ -25,6 +25,7 @@ mkdir -p /home/my/bootstrap-kali/roles/zsh/tasks
 mkdir -p /home/my/bootstrap-kali/roles/zsh/templates
 mkdir -p /home/my/bootstrap-kali/roles/tmux/tasks
 mkdir -p /home/my/bootstrap-kali/roles/tmux/handlers
+mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/defaults
 mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/tasks
 mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/handlers
 
@@ -559,6 +560,15 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/zsh/tasks/main.yml
     owner: my
     group: my
     mode: '0644'
+
+EOF
+
+cat<<'EOF' >/home/my/bootstrap-kali/roles/vmware_mount/defaults/main.yml
+---
+vmware_share_mountpoint: /mnt/hgfs
+vmware_share_source: ".host:/"
+vmware_share_fstype: "fuse.vmhgfs-fuse"
+vmware_share_opts: "allow_other"
 
 EOF
 

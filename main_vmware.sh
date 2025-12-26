@@ -26,6 +26,7 @@ mkdir -p /home/my/bootstrap-kali/roles/zsh/templates
 mkdir -p /home/my/bootstrap-kali/roles/tmux/tasks
 mkdir -p /home/my/bootstrap-kali/roles/tmux/handlers
 mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/tasks
+mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/handlers
 
 # inventory
 cat<<'EOF' > /home/my/bootstrap-kali/inventory.ini
@@ -89,7 +90,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
     - productivity
     - desktop-cleanup
     - fonts
-    #- vmware_mount
+    - vmware_mount
     - zsh
     - zsh_theme
 
@@ -178,6 +179,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - tnscmd10g
       - whatweb
       - pipx
+      - open-vm-tools
     state: present
 EOF
 
@@ -557,5 +559,46 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/zsh/tasks/main.yml
     owner: my
     group: my
     mode: '0644'
+
+EOF
+
+cat<<'EOF' >/home/my/bootstrap-kali/roles/vmware_mount/tasks/main.yml
+---
+- name: Ensure mountpoint directory exists
+  file:
+    path: "{{ vmware_share_mountpoint }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install VMware tools package
+  package:
+    name: "{{ vmware_tools_package }}"
+    state: present
+  when: ansible_os_family in ["Debian", "RedHat"]
+
+- name: Mount VMware host shared folders
+  mount:
+    path: "{{ vmware_share_mountpoint }}"
+    src: "{{ vmware_share_source }}"
+    fstype: "{{ vmware_share_fstype }}"
+    opts: "{{ vmware_share_opts }}"
+    state: mounted
+
+- name: Persist VMware host shared folders in fstab
+  mount:
+    path: "{{ vmware_share_mountpoint }}"
+    src: "{{ vmware_share_source }}"
+    fstype: "{{ vmware_share_fstype }}"
+    opts: "{{ vmware_share_opts }}"
+    state: present
+
+EOF
+
+cat<<'EOF' >/home/my/bootstrap-kali/roles/vmware_mount/handlers/main.yml
+---
+- name: remount vmware shares
+  command: mount -a
 
 EOF

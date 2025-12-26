@@ -148,6 +148,28 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - curl
       - libreadline-dev
       - libbz2-dev
+      - rlwrap
+      - braa
+      - seclists
+      - dnsrecon
+      - enum4linux
+      - feroxbuster
+      - gobuster
+      - impacket-scripts
+      - nbtscan
+      - nikto
+      - nmap
+      - onesixtyone
+      - oscanner
+      - redis-tools
+      - smbclient
+      - smbmap
+      - snmp
+      - sslscan
+      - sipvicious
+      - tnscmd10g
+      - whatweb
+      - pipx
     state: present
 EOF
 

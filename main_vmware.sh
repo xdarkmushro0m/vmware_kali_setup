@@ -528,7 +528,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
     dest: "{{ user_home }}/.tmux.conf"
     mode: '0644'
   when: not tmux_conf.stat.exists
-  notify: Reload tmux
+  #notify: Reload tmux
 
 - name: Ensure tmux plugins directory exists
   file:

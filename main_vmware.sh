@@ -438,6 +438,13 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/fonts/tasks/main.yml
     msg: "MesloLGS NF fonts detected ✅"
   when: "'MesloLGS NF' in fc_list.stdout"
 
+- name: Ensure user "my" owns /home/my/.fonts recursively
+  ansible.builtin.file:
+    path: /home/my/.fonts
+    owner: my
+    group: my
+    recurse: yes
+
 EOF
 
 cat<<'EOF' > /home/my/bootstrap-kali/roles/fonts/handlers/main.yml

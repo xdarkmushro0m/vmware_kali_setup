@@ -485,6 +485,14 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/zsh_theme/handlers/main.yml
 
 EOF
 
+cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/handlers/main.yml
+---
+- name: Reload tmux
+  command: tmux source-file /home/my/.tmux.conf
+  become: false
+
+EOF
+
 cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
 ---
 - name: Check if .tmux.conf exists
@@ -522,7 +530,6 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
     update: yes
   when: tmux_plugins_dir.stat.exists
   notify: Reload tmux
-
 
 - name: Deploy tmux.conf
   copy:

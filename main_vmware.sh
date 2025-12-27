@@ -181,6 +181,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - whatweb
       - pipx
       - open-vm-tools
+      - sshpass
     state: present
 EOF
 

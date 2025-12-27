@@ -97,33 +97,6 @@ cat<<'EOF' > /home/my/bootstrap-kali/site.yml
 
 EOF
 
-# ms-repo-cleanup role
-cat<<'EOF' > /home/my/bootstrap-kali/roles/ms-repo-cleanup/tasks/main.yml
----
-- name: Ensure Microsoft keyrings directory exists
-  ansible.builtin.file:
-    path: /usr/share/keyrings
-    state: directory
-    mode: '0755'
-
-- name: Download Microsoft GPG key
-  ansible.builtin.get_url:
-    url: https://packages.microsoft.com/keys/microsoft.asc
-    dest: /usr/share/keyrings/microsoft.gpg
-    mode: '0644'
-
-- name: Add VSCode repository (arm64)
-  ansible.builtin.apt_repository:
-    repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
-    state: present
-    filename: "vscode"
-
-- name: Update apt cache
-  ansible.builtin.apt:
-    update_cache: yes
-
-EOF
-
 # core-tools role
 cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
 ---
@@ -182,7 +155,35 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - pipx
       - open-vm-tools
       - sshpass
+      - filezilla
     state: present
+EOF
+
+# ms-repo-cleanup role
+cat<<'EOF' > /home/my/bootstrap-kali/roles/ms-repo-cleanup/tasks/main.yml
+---
+- name: Ensure Microsoft keyrings directory exists
+  ansible.builtin.file:
+    path: /usr/share/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Microsoft GPG key
+  ansible.builtin.get_url:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    dest: /usr/share/keyrings/microsoft.gpg
+    mode: '0644'
+
+- name: Add VSCode repository (arm64)
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+    state: present
+    filename: "vscode"
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
 EOF
 
 # pentest-tools role

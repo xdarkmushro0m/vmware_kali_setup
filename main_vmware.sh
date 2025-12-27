@@ -557,6 +557,15 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/tmux/tasks/main.yml
     mode: '0644'
   notify: Reload tmux
 
+- name: Ensure /home/my/.tmux ownership and permissions
+  ansible.builtin.file:
+    path: "/home/my/.tmux"
+    state: directory
+    owner: "my"
+    group: "my"
+    mode: "755"
+
+
 EOF
 
 cat<<'EOF' >  /home/my/bootstrap-kali/roles/tmux/handlers/main.yml

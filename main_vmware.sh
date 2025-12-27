@@ -157,6 +157,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - sshpass
       - filezilla
       - mdbtools
+      - pst-utils
     state: present
 EOF
 

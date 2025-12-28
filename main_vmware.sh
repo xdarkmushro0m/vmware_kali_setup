@@ -159,6 +159,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - mdbtools
       - pst-utils
       - nishang
+      - gpp-decrypt
     state: present
 EOF
 

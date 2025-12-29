@@ -160,6 +160,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - pst-utils
       - nishang
       - gpp-decrypt
+      - jq
     state: present
 EOF
 

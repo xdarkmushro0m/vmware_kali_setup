@@ -161,6 +161,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - nishang
       - gpp-decrypt
       - jq
+      - sshpass
     state: present
 EOF
 

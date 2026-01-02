@@ -26,6 +26,7 @@ mkdir -p /home/my/bootstrap-kali/roles/zsh/templates
 mkdir -p /home/my/bootstrap-kali/roles/tmux/tasks
 mkdir -p /home/my/bootstrap-kali/roles/tmux/handlers
 mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/tasks
+mkdir -p /home/my/bootstrap-kali/roles/burpsuiteuserconfig/tasks
 
 # inventory
 cat<<'EOF' > /home/my/bootstrap-kali/inventory.ini
@@ -542,5 +543,30 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/zsh/tasks/main.yml
     owner: my
     group: my
     mode: '0644'
+
+EOF
+
+cat<<'EOF' > /home/my/bootstrap-kali/roles/burpsuiteuserconfig/tasks/main.yml
+vars:
+  burp_user: my
+  burp_home: "/home/{{ burp_user }}/.BurpSuite"
+  burp_config: "{{ burp_home }}/UserConfigCommunity.json"
+
+tasks:
+  - name: Ensure BurpSuite config directory exists
+    file:
+      path: "{{ burp_home }}"
+      state: directory
+      mode: '0755'
+      owner: "{{ burp_user }}"
+      group: "{{ burp_user }}"
+
+  - name: Copy BurpSuite user config
+    copy:
+      src: BurpSuite_UserconfigCommunity.json
+      dest: "{{ burp_config }}"
+      owner: "{{ burp_user }}"
+      group: "{{ burp_user }}"
+      mode: '0644'
 
 EOF

@@ -28,6 +28,10 @@ mkdir -p /home/my/bootstrap-kali/roles/tmux/handlers
 mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/defaults
 mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/tasks
 mkdir -p /home/my/bootstrap-kali/roles/vmware_mount/handlers
+mkdir -p /home/my/bootstrap-kali/roles/rust-bloodhound-ce/tasks
+mkdir -p /home/my/bootstrap-kali/roles/rust-bloodhound-ce/defaults
+mkdir -p /home/my/bootstrap-kali/roles/rust-bloodhound-ce/handlers
+mkdir -p /home/my/bootstrap-kali/roles/rust-bloodhound-ce/meta
 
 # inventory
 cat<<'EOF' > /home/my/bootstrap-kali/inventory.ini
@@ -163,6 +167,74 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
       - jq
       - sshpass
     state: present
+EOF
+
+cat<< 'EOF' > /home/my/bootstrap-kali/roles/rust-bloodhound-ce/defaults/main.yml
+---
+rust_version: stable
+cargo_bin_path: ~/.cargo/bin
+rusthound_ce_version: latest
+
+EOF
+
+
+cat<< 'EOF' > /home/my/bootstrap-kali/roles/rust-bloodhound-ce/handlers/main.yml
+---
+- name: Restart rusthound-ce service
+  service:
+    name: rusthound-ce
+    state: restarted
+
+EOF
+
+cat<< 'EOF' > /home/my/bootstrap-kali/roles/rust-bloodhound-ce/meta
+---
+galaxy_info:
+  author: your_name
+  description: Install rusthound-ce via Cargo
+  license: MIT
+  min_ansible_version: 2.9
+dependencies: []
+
+EOF
+
+cat<<'EOF' > /home/my/bootstrap-kali/roles/rust-bloodhound-ce/tasks/main.yml
+---
+- name: Ensure build dependencies are present
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - curl
+    - build-essential
+    - pkg-config
+    - libssl-dev
+    - libkrb5-dev
+    - libclang-dev
+
+- name: Install Rust using rustup
+  shell: |
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain {{ rust_version }}
+  args:
+    creates: "{{ cargo_bin_path }}/cargo"
+
+- name: Ensure Cargo is up to date
+  shell: "{{ cargo_bin_path }}/cargo install-update -a"
+  environment:
+    PATH: "{{ cargo_bin_path }}:{{ ansible_env.PATH }}"
+  when: rusthound_ce_version == "latest"
+
+- name: Install rusthound-ce
+  shell: >
+    {{ cargo_bin_path }}/cargo install rusthound-ce
+    {% if rusthound_ce_version != 'latest' %} --version {{ rusthound_ce_version }} {% endif %}
+  environment:
+    PATH: "{{ cargo_bin_path }}:{{ ansible_env.PATH }}"
+  args:
+    creates: "{{ cargo_bin_path }}/rusthound-ce"
+  notify: Restart rusthound-ce service
+
+
 EOF
 
 # ms-repo-cleanup role

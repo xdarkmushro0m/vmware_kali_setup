@@ -107,7 +107,7 @@ cat<<'EOF' > /home/my/bootstrap-kali/roles/core-tools/tasks/main.yml
 - name: Install core utilities
   apt:
     name:
-      - kinit
+      - krb5-user
       - systemd-timesyncd
       - jq
       - git
